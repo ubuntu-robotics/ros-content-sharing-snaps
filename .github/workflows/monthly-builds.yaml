@@ -13,7 +13,7 @@ jobs:
       # snapcraft remote-build will create a repository with the name decided by the --build-id arg
       # URL to this repo echoed below to help debug builds (does not change if the workflow is re-run)
       SNAPCRAFT_BUILDER_ID: ${{ matrix.releases }}-${{ matrix.arch }}-${{ github.run_id }}
-    name: Runtime (Core) ${{ matrix.releases }}-${{ matrix.arch }}
+    name: Remote building the snaps
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,7 +37,7 @@ jobs:
       - uses: snapcore/action-build@v1
         with:
           path: snaps/foxy_ros_base
-          snapcraft-args: "--remote-build --launchpad-accept-public-upload --build-id foxy-ros-base-${SNAPCRAFT_BUILDER_ID}"
+          snapcraft-args: "remote-build --launchpad-accept-public-upload --build-id foxy-ros-base-${SNAPCRAFT_BUILDER_ID}"
       - uses: actions/upload-artifact@v3
         name: Upload the snap as artifact
         with:
