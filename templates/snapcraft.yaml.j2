@@ -36,7 +36,10 @@ package-repositories:
 architectures:
   - build-on: [amd64]
   - build-on: [arm64]
+{%- if versionmap[ros_distro] == '1' %}
   - build-on: [armhf]
+{%- else %}
+
 
 slots:
   ros-{{ ros_distro }}:
@@ -49,7 +52,6 @@ parts:
   variant:
     plugin: {{ pluginmap[ros_distro] }}
     source: ./generate_package_xml_recursive_dependencies.py
-    source-branch: fix/ros2
 {%- if versionmap[ros_distro] == '1' %}
     build-packages: [ros-{{ ros_distro }}-catkin]
 {%- else %}
