@@ -1,0 +1,12 @@
+name: Monthly builds
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  dummy:
+    runs-on: [ubuntu-latest]
+    name: dummy
+    steps:
+      - run: echo "Hello World"
