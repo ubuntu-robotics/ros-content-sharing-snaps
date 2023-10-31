@@ -38,6 +38,15 @@ jobs:
         with:
           path: snaps/foxy_ros_base
           snapcraft-args: "remote-build --launchpad-accept-public-upload --build-id foxy-ros-base-${SNAPCRAFT_BUILDER_ID}"
+
+      - uses: actions/upload-artifact@v3
+        name: Upload snapcraft logs
+        with:
+          name: snapcraft logs
+          path: |
+            /home/runner/.cache/snapcraft/log/
+            /home/runner/.local/state/snapcraft/log/
+            snaps/**/ros-*.txt
       - uses: actions/upload-artifact@v3
         name: Upload the snap as artifact
         with:
