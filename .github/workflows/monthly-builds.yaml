@@ -6,38 +6,69 @@ on:
   workflow_dispatch:
 
 jobs:
-  snap:
+  generate-snapcrafts:
+    name: Generate snapcraft.yaml files
     runs-on: [ubuntu-latest]
-    env:
-      SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT7_CREDS }}
-      # snapcraft remote-build will create a repository with the name decided by the --build-id arg
-      # URL to this repo echoed below to help debug builds (does not change if the workflow is re-run)
-      SNAPCRAFT_BUILDER_ID: ${{ matrix.releases }}-${{ matrix.arch }}-${{ github.run_id }}
-    name: Remote building the snaps
+    outputs:
+      matrix: ${{ steps.generate.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' 
+      - name: Generate snapacraft yaml files for all ros distros
+        id: generate
+        run: |
+          pip install .
+          python3 ./generate_all_ros_meta_snapcraft_file.py
+          echo "matrix=$(python3 ./generate_all_ros_meta_snapcraft_file.py)" >> $GITHUB_OUTPUT
+      - name: Upload snapcrafts folders
+        uses: actions/upload-artifact@v3
+        with:
+          name: snaps
+          path: snaps/
+
+  ros1-snap:
+    name: Remote building the ros1 snaps
+    needs: generate-snapcrafts
+    runs-on: [ubuntu-latest]
+    strategy:
+      matrix:
+        ros1_distros: ${{ fromJSON(needs.generate-snapcrafts.outputs.matrix).ros1_distros }}
+        ros1_variants: ${{ fromJSON(needs.generate-snapcrafts.outputs.matrix).ros1_variants }}
+    env:
+      SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT7_CREDS }}
+      # snapcraft remote-build will create a repository with the name decided by the --build-id arg
+      # URL to this repo echoed below to help debug builds (does not change if the workflow is re-run)
+      SNAPCRAFT_BUILDER_ID: ${{ github.run_id }}
+    steps:
+      - name: Download snapcrafts folders
+        uses: actions/download-artifact@v3
+        with:
+          name: snaps
+      - name: print matrix
+        run: |
+          echo ${{ matrix.ros1_distros }}
+          echo ${{ matrix.ros1_variants }}
+      - name: print matrix
+        run: |
+          echo ${{ matrix.ros1_distros }}
+          echo ${{ matrix.ros1_variants }}
       - name: Add LP credentials
         run: |
           mkdir -p ~/.local/share/snapcraft/provider/launchpad/
           echo '${{ secrets.LP_CREDS }}' > ~/.local/share/snapcraft/provider/launchpad/credentials
           git config --global user.email "canonical-robotics-brand@canonical.com"
           git config --global user.name "Canonical robotics"
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.10' 
-      - run: |
-          pip install .
-          python3 ./generate_all_ros_meta_snapcraft_file.py
-      # - name: Print Launchpad build repository
-      #   run: |
-      #     echo "Building at: https://git.launchpad.net/~ce-certification-qa/+snap/$SNAPCRAFT_BUILDER_ID"
+      - name: Print Launchpad build repository
+        run: |
+          echo "Building at: https://git.launchpad.net/~ce-certification-qa/+snap/$SNAPCRAFT_BUILDER_ID"
       - uses: snapcore/action-build@v1
         with:
-          path: snaps/foxy_ros_base
-          snapcraft-args: "remote-build --launchpad-accept-public-upload --build-id foxy-ros-base-${SNAPCRAFT_BUILDER_ID}"
+          path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.ros1_distros }}_${{ matrix.ros1_variants }}
+          snapcraft-args: "remote-build --launchpad-accept-public-upload --build-id ${{ matrix.ros1_distros }}-${{ matrix.ros1_variants }}-${SNAPCRAFT_BUILDER_ID}"
       - uses: actions/upload-artifact@v3
         name: Upload snapcraft logs
         with:
@@ -45,9 +76,58 @@ jobs:
           path: |
             /home/runner/.cache/snapcraft/log/
             /home/runner/.local/state/snapcraft/log/
-            snaps/**/ros-*.txt
+            /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/ros-*.txt
       - uses: actions/upload-artifact@v3
         name: Upload the snap as artifact
         with:
           name: remote_built_snaps
-          path: snaps/**/*.snap
+          path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/*.snap
+
+  ros2-snap:
+    name: Remote building the ros2 snaps
+    needs: generate-snapcrafts
+    runs-on: [ubuntu-latest]
+    strategy:
+      matrix:
+        ros2_distros: ${{ fromJSON(needs.generate-snapcrafts.outputs.matrix).ros2_distros }}
+        ros2_variants: ${{ fromJSON(needs.generate-snapcrafts.outputs.matrix).ros2_variants }}
+    env:
+      SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT7_CREDS }}
+      # snapcraft remote-build will create a repository with the name decided by the --build-id arg
+      # URL to this repo echoed below to help debug builds (does not change if the workflow is re-run)
+      SNAPCRAFT_BUILDER_ID: ${{ github.run_id }}
+    steps:
+      - name: Download snapcrafts folders
+        uses: actions/download-artifact@v3
+        with:
+          name: snaps
+      - name: print matrix
+        run: |
+          echo ${{ matrix.ros2_distros }}
+          echo ${{ matrix.ros2_variants }}
+      - name: Add LP credentials
+        run: |
+          mkdir -p ~/.local/share/snapcraft/provider/launchpad/
+          echo '${{ secrets.LP_CREDS }}' > ~/.local/share/snapcraft/provider/launchpad/credentials
+          git config --global user.email "canonical-robotics-brand@canonical.com"
+          git config --global user.name "Canonical robotics"
+      - name: Print Launchpad build repository
+        run: |
+          echo "Building at: https://git.launchpad.net/~ce-certification-qa/+snap/$SNAPCRAFT_BUILDER_ID"
+      - uses: snapcore/action-build@v1
+        with:
+          path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.ros2_distros }}_${{ matrix.ros2_variants }}
+          snapcraft-args: "remote-build --launchpad-accept-public-upload --build-id ${{ matrix.ros2_distros }}-${{ matrix.ros2_variants }}-${SNAPCRAFT_BUILDER_ID}"
+      - uses: actions/upload-artifact@v3
+        name: Upload snapcraft logs
+        with:
+          name: snapcraft_logs
+          path: |
+            /home/runner/.cache/snapcraft/log/
+            /home/runner/.local/state/snapcraft/log/
+            /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/ros-*.txt
+      - uses: actions/upload-artifact@v3
+        name: Upload the snap as artifact
+        with:
+          name: remote_built_snaps
+          path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/*.snap

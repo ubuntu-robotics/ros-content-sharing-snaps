@@ -1,6 +1,7 @@
 import argparse
 import os
 from pathlib import Path
+import json
 
 from generate_ros_meta_snapcraft_file import main as gen
 
@@ -35,11 +36,21 @@ def main(args=None):
         os.makedirs(parsed_args.path, exist_ok=True)
 
 
-    matrix={
+    matrix={ 
         "noetic": ["ros-core", "ros-base", "robot", "desktop"],
         "foxy": ["ros-core", "ros-base", "desktop"],
         "humble": ["ros-core", "ros-base", "desktop"],
     }
+ 
+    github_action_matrix={
+        "ros1_distros": ["noetic"],
+        "ros1_variants": ["ros_core", "ros_base", "robot", "desktop"],
+        "ros2_distros": ["foxy", "humble"],
+        "ros2_variants": ["ros_core", "ros_base", "desktop"],
+    }
+
+    matrix_json = json.dumps(github_action_matrix)
+    print(matrix_json)
 
     for rosdistro, variants in matrix.items():
         for variant in variants:
@@ -64,4 +75,3 @@ def main(args=None):
 
 if __name__ == "__main__":
     main()
-
