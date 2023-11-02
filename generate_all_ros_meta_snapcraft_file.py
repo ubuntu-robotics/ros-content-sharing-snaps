@@ -56,8 +56,8 @@ def main(args=None):
         for variant in variants:
 
             folders = [
-                parsed_args.path / f'{rosdistro}_{variant.replace("-", "_")}',
-                parsed_args.path / f'{rosdistro}_{variant.replace("-", "_")}_dev'
+                parsed_args.path / f'{rosdistro}-{variant}',
+                parsed_args.path / f'{rosdistro}-{variant}-dev'
             ]
 
             for folder in folders:
