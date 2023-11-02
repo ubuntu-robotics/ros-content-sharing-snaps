@@ -74,6 +74,7 @@ jobs:
           snapcraft-args: "remote-build --launchpad-accept-public-upload --build-id ${{ matrix.snap_names }}-${SNAPCRAFT_BUILDER_ID}"
       - uses: actions/upload-artifact@v3
         name: Upload snapcraft logs
+        if: always()
         with:
           name: snapcraft_logs
           path: |
