@@ -3,6 +3,14 @@ name: Monthly builds
 on:
   schedule:
     - cron: '0 0 1 * *'
+  push:
+    tags:
+      - '*'
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -35,6 +43,7 @@ jobs:
     needs: generate-snapcrafts
     runs-on: [ubuntu-latest]
     strategy:
+      fail-fast: false
       matrix:
         ros1_distros: ${{ fromJSON(needs.generate-snapcrafts.outputs.matrix).ros1_distros }}
         ros1_variants: ${{ fromJSON(needs.generate-snapcrafts.outputs.matrix).ros1_variants }}
@@ -88,6 +97,7 @@ jobs:
     needs: generate-snapcrafts
     runs-on: [ubuntu-latest]
     strategy:
+      fail-fast: false
       matrix:
         ros2_distros: ${{ fromJSON(needs.generate-snapcrafts.outputs.matrix).ros2_distros }}
         ros2_variants: ${{ fromJSON(needs.generate-snapcrafts.outputs.matrix).ros2_variants }}
