@@ -107,7 +107,7 @@ jobs:
       - name: Generate GH CI matrix for uploads
         id: generate
         run: |
-          SNAP_FILE_LIST="${{ snap-build.outputs.snap_files_list }}"
+          SNAP_FILE_LIST="${{ needs.snap-build.outputs.snap_files_list }}"
           SNAP_FILE_LIST=$(jq --compact-output --null-input '$ARGS.positional' --args -- "${SNAP_FILE_LIST[@]}")
           echo "matrix=$SNAP_FILE_LIST" >> $GITHUB_OUTPUT
 
