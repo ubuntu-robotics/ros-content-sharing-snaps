@@ -43,7 +43,7 @@ jobs:
     needs: generate-snapcrafts
     runs-on: [ubuntu-latest]
     outputs:
-      matrix: ${{ steps.snap-build.outputs.snap_files_list }}
+      snap_files_list: ${{ steps.snap-build.outputs.snap_files_list }}
     strategy:
       fail-fast: false
       matrix:
