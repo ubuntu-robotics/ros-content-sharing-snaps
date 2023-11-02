@@ -95,7 +95,7 @@ jobs:
       - name: Generate matrix for upload
         id: ros1-upload-generate
         run: |
-          echo "snap_files_list+=($(ls /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/*.snap)) >> $GITHUB_OUTPUT
+          echo "snap_files_list+=($(ls /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/*.snap))" >> $GITHUB_OUTPUT
 
   generate-uploads-matrix:
     name: Generate GH CI matrix for uploads
