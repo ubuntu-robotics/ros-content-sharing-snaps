@@ -39,11 +39,11 @@ jobs:
           path: snaps/
 
   snap-build:
-    name: Remote building the ros1 snaps
+    name: Snap remote build
     needs: generate-snapcrafts
     runs-on: [ubuntu-latest]
-    # outputs:
-    #   matrix: ${{ steps.ros1-upload-generate.outputs.matrix }}
+    outputs:
+      matrix: ${{ steps.snap-build.outputs.snap_files_list }}
     strategy:
       fail-fast: false
       matrix:
@@ -88,28 +88,51 @@ jobs:
         with:
           name: ${{ matrix.snap_names }}
           path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/*.snap
-      # - name: Generate matrix for upload
-      #   id: ros1-upload-generate
-      #   run: |
-      #     echo "matrix=$(ls snaps/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+      - name: Generate matrix for upload
+        id: ros1-upload-generate
+        run: |
+          echo "snap_files_list+=($(ls /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/*.snap)) >> $GITHUB_OUTPUT
 
-  # ros1-publish:
-  #   if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       ros1_distros: ${{ fromJSON(needs.generate-snapcrafts.outputs.matrix).ros1_distros }}
-  #       ros1_variants: ${{ fromJSON(needs.generate-snapcrafts.outputs.matrix).ros1_variants }}
-  #   needs: ros1-snap
-  #   steps:
-  #   - uses: actions/download-artifact@v3
-  #     with:
-  #       name: remote_built_snaps
-  #       path: .
-  #   - uses: snapcore/action-publish@v1
-  #     env:
-  #       SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
-  #     with:
-  #       snap: ${{needs.build.outputs.snap-file}}
-  #       release: 'candidate'
+  generate-uploads-matrix:
+    name: Generate GH CI matrix for uploads
+    runs-on: [ubuntu-latest]
+    needs: snap-build
+    outputs:
+      matrix: ${{ steps.generate.outputs.matrix }}
+    steps:
+      - name: Generate GH CI matrix for uploads
+        id: generate
+        run: |
+          SNAP_FILE_LIST="{{ snap-build.outputs.snap_files_list }}"
+          SNAP_FILE_LIST=$(jq --compact-output --null-input '$ARGS.positional' --args -- "${SNAP_FILE_LIST[@]}")
+          echo "matrix=$SNAP_FILE_LIST" >> $GITHUB_OUTPUT
+
+  ros-publish:
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        files_to_upload: ${{ fromJSON(needs.generate-uploads-matrix.outputs.matrix) }}
+    needs: generate-uploads-matrix
+    steps:
+      - name: print matrix
+        run: |
+          echo ${{ matrix.files_to_upload }}
+    # - uses: actions/download-artifact@v3
+    #   with:
+    #     name: ${{ matrix.snap_names }}
+    #     path: .
+    # - run: |
+    #   apt install snapd --yes
+    #   snap install snapcraft
+    #   SNAPCRAFT_STORE_CREDENTIALS=${{ secrets.STORE_LOGIN }}
+    #   for snap in ${{ matrix.snap_names }} do
+    #     PIDS[] = snapcraft upload ${{ matrix.snap_names }}/$snap --release latest/candidate &
+    #   end
+    # - uses: snapcore/action-publish@v1
+    #   env:
+    #     SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+    #   with:
+    #     snap: ${{needs.build.outputs.snap-file}}
+    #     release: 'edge'
