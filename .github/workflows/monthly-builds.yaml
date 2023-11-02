@@ -43,7 +43,7 @@ jobs:
     needs: generate-snapcrafts
     runs-on: [ubuntu-latest]
     outputs:
-      snap_files_list: ${{ steps.snap-build.outputs.snap_files_list }}
+      snap_files_list: ${{ steps.snap-list.outputs.snap_files_list }}
     strategy:
       fail-fast: false
       matrix:
@@ -93,9 +93,10 @@ jobs:
           echo "hello" > /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/noetic-ros-base/aa_0.1_amd64.snap
           echo "world" > /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/noetic-ros-base/aa_0.1_arm64.snap
       - name: Generate matrix for upload
-        id: ros1-upload-generate
+        id: snap-list
         run: |
           echo "snap_files_list+=("$(ls /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/*.snap)")" >> $GITHUB_OUTPUT
+          echo $GITHUB_OUTPUT
 
   generate-uploads-matrix:
     name: Generate GH CI matrix for uploads
@@ -107,9 +108,10 @@ jobs:
       - name: Generate GH CI matrix for uploads
         id: generate
         run: |
-          SNAP_FILE_LIST="${{ needs.snap-build.outputs.snap_files_list }}"
+          SNAP_FILE_LIST=${{ needs.snap-build.outputs.snap_files_list }}
           SNAP_FILE_LIST=$(jq --compact-output --null-input '$ARGS.positional' --args -- "${SNAP_FILE_LIST[@]}")
           echo "matrix=$SNAP_FILE_LIST" >> $GITHUB_OUTPUT
+          
 
   ros-publish:
     # if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
