@@ -88,6 +88,10 @@ jobs:
       #   with:
       #     name: ${{ matrix.snap_names }}
       #     path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/*.snap
+      - name: DEBUG
+        run: |
+          echo "hello" > /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/noetic-ros-base/aa_0.1_amd64.snap
+          echo "world" > /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/noetic-ros-base/aa_0.1_arm64.snap
       - name: Generate matrix for upload
         id: ros1-upload-generate
         run: |
