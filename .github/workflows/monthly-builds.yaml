@@ -70,24 +70,24 @@ jobs:
       - name: Print Launchpad build repository
         run: |
           echo "Building at: https://git.launchpad.net/~ce-certification-qa/+snap/$SNAPCRAFT_BUILDER_ID"
-      - uses: snapcore/action-build@v1
-        with:
-          path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}
-          snapcraft-args: "remote-build --launchpad-accept-public-upload --build-id ${{ matrix.snap_names }}-${SNAPCRAFT_BUILDER_ID}"
-      - uses: actions/upload-artifact@v3
-        name: Upload snapcraft logs
-        if: always()
-        with:
-          name: snapcraft_logs
-          path: |
-            /home/runner/.cache/snapcraft/log/
-            /home/runner/.local/state/snapcraft/log/
-            /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/ros-*.txt
-      - uses: actions/upload-artifact@v3
-        name: Upload the snap as artifact
-        with:
-          name: ${{ matrix.snap_names }}
-          path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/*.snap
+      # - uses: snapcore/action-build@v1
+      #   with:
+      #     path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}
+      #     snapcraft-args: "remote-build --launchpad-accept-public-upload --build-id ${{ matrix.snap_names }}-${SNAPCRAFT_BUILDER_ID}"
+      # - uses: actions/upload-artifact@v3
+      #   name: Upload snapcraft logs
+      #   if: always()
+      #   with:
+      #     name: snapcraft_logs
+      #     path: |
+      #       /home/runner/.cache/snapcraft/log/
+      #       /home/runner/.local/state/snapcraft/log/
+      #       /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/ros-*.txt
+      # - uses: actions/upload-artifact@v3
+      #   name: Upload the snap as artifact
+      #   with:
+      #     name: ${{ matrix.snap_names }}
+      #     path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/*.snap
       - name: Generate matrix for upload
         id: ros1-upload-generate
         run: |
