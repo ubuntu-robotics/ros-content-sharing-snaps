@@ -95,7 +95,8 @@ jobs:
       - name: Generate matrix for upload
         id: snap-list
         run: |
-          echo "snap_files_list+=('$(ls /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/*.snap)')" >> $GITHUB_OUTPUT
+          SNAPS="$(ls /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/*.snap)"
+          echo "snap_files_list+=($SNAPS)" >> $GITHUB_OUTPUT
           echo $GITHUB_OUTPUT
 
   generate-uploads-matrix:
