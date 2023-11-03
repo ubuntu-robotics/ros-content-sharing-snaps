@@ -34,12 +34,7 @@ package-repositories:
 {%- endif %}
 
 architectures:
-  - build-on: [amd64]
-  - build-on: [arm64]
-{%- if versionmap[ros_distro] == '1' %}
-  - build-on: [armhf]
-{%- endif %}
-
+  - build-on: {{ architecture }}
 
 slots:
   ros-{{ ros_distro }}:
