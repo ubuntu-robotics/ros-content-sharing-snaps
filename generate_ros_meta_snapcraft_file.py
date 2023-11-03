@@ -39,6 +39,14 @@ def main(args=None):
         help="The ROS metapackage to serve as a baseline. (default: %(default)s).",
     )
     parser.add_argument(
+        "-a",
+        "--architecture",
+        type=str,
+        required=True,
+        choices=("amd64", "arm64", "armhf"),
+        help="The snap architecture to target.",
+    )
+    parser.add_argument(
         "-p",
         "--path",
         # type=is_dir,
@@ -68,6 +76,7 @@ def main(args=None):
         template = environment.from_string(f.read())
         snapcraft_file = template.render(
             ros_distro = parsed_args.rosdistro,
+            architecture = parsed_args.architecture,
             variant = parsed_args.variant,
             dev = parsed_args.dev,
         )

@@ -51,20 +51,15 @@ def main(args=None):
     for rosdistro, variants in matrix.items():
         for variant in variants:
             arch_names = arch_matrix[versionmap[rosdistro]]
-            print(arch_names)
             for arch_name in arch_names:
                 folders = [
                     parsed_args.path / f'{rosdistro}-{variant}-{arch_name}',
                     parsed_args.path / f'{rosdistro}-{variant}-{arch_name}-dev'
                 ]
-                print(f'{rosdistro}-{variant}-{arch_name}')
 
                 for folder in folders:
-                    print(folder)
-
                     os.makedirs(folder, exist_ok=True)
-
-                    gen_args = ["-r", rosdistro, "-v", variant, "-p", str(folder), "-q"]
+                    gen_args = ["-r", rosdistro, "-v", variant, "-a", arch_name, "-p", str(folder), "-q"]
                     if "dev" in folder.stem:
                         gen_args.append("-d")
                     if parsed_args.snap:
