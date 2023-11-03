@@ -39,11 +39,11 @@ jobs:
           path: snaps/
 
   snap-build:
-    name: Remote building the ros1 snaps
+    name: Remote building the ros snaps
     needs: generate-snapcrafts
     runs-on: [ubuntu-latest]
-    # outputs:
-    #   matrix: ${{ steps.ros1-upload-generate.outputs.matrix }}
+    outputs:
+      snap-file: ${{ steps.build-snap.outputs.snap }}
     strategy:
       fail-fast: false
       matrix:
@@ -95,29 +95,24 @@ jobs:
         name: Upload the snap as artifact
         with:
           name: ${{ matrix.snap_names }}
-          path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/*.snap
-      # - name: Generate matrix for upload
-      #   id: ros1-upload-generate
-      #   run: |
-      #     echo "matrix=$(ls snaps/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+          path: ${{ steps.build-snap.outputs.snap }}
 
-  # ros1-publish:
-  #   if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       ros1_distros: ${{ fromJSON(needs.generate-snapcrafts.outputs.matrix).ros1_distros }}
-  #       ros1_variants: ${{ fromJSON(needs.generate-snapcrafts.outputs.matrix).ros1_variants }}
-  #   needs: ros1-snap
-  #   steps:
-  #   - uses: actions/download-artifact@v3
-  #     with:
-  #       name: remote_built_snaps
-  #       path: .
-  #   - uses: snapcore/action-publish@v1
-  #     env:
-  #       SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
-  #     with:
-  #       snap: ${{needs.build.outputs.snap-file}}
-  #       release: 'candidate'
+  ros-publish:
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        snap_names: ${{ fromJSON(needs.generate-snapcrafts.outputs.matrix) }}
+    needs: snap-build
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: ${{ matrix.snap_names }}
+        path: .
+    - uses: snapcore/action-publish@v1
+      env:
+        SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+      with:
+        snap: ${{needs.build.outputs.snap-file}}
+        release: ${{ startsWith(github.ref, 'refs/tags/') && 'edge'}}
