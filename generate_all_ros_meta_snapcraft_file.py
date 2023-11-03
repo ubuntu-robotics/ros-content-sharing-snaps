@@ -34,7 +34,13 @@ def main(args=None):
     if not parsed_args.path:
         parsed_args.path = Path("snaps")
         os.makedirs(parsed_args.path, exist_ok=True)
+ 
+    versionmap={"noetic":"1", "foxy":"2", "humble":"2"}
 
+    arch_matrix={
+        "1": ["amd64", "arm64", "armhf"],
+        "2": ["amd64", "arm64"],
+    }
 
     matrix={ 
         "noetic": ["ros-core", "ros-base", "robot", "desktop"],
@@ -42,35 +48,29 @@ def main(args=None):
         "humble": ["ros-core", "ros-base", "desktop"],
     }
  
-    github_action_matrix={
-        "ros1_distros": ["noetic"],
-        "ros1_variants": ["ros_core", "ros_base", "robot", "desktop"],
-        "ros2_distros": ["foxy", "humble"],
-        "ros2_variants": ["ros_core", "ros_base", "desktop"],
-    }
-
-    matrix_json = json.dumps(github_action_matrix)
-    print(matrix_json)
-
     for rosdistro, variants in matrix.items():
         for variant in variants:
+            arch_names = arch_matrix[versionmap[rosdistro]]
+            print(arch_names)
+            for arch_name in arch_names:
+                folders = [
+                    parsed_args.path / f'{rosdistro}-{variant}-{arch_name}',
+                    parsed_args.path / f'{rosdistro}-{variant}-{arch_name}-dev'
+                ]
+                print(f'{rosdistro}-{variant}-{arch_name}')
 
-            folders = [
-                parsed_args.path / f'{rosdistro}-{variant}',
-                parsed_args.path / f'{rosdistro}-{variant}-dev'
-            ]
+                for folder in folders:
+                    print(folder)
 
-            for folder in folders:
+                    os.makedirs(folder, exist_ok=True)
 
-                os.makedirs(folder, exist_ok=True)
+                    gen_args = ["-r", rosdistro, "-v", variant, "-p", str(folder), "-q"]
+                    if "dev" in folder.stem:
+                        gen_args.append("-d")
+                    if parsed_args.snap:
+                        gen_args.append("-s")
 
-                gen_args = ["-r", rosdistro, "-v", variant, "-p", str(folder), "-q"]
-                if "dev" in folder.stem:
-                    gen_args.append("-d")
-                if parsed_args.snap:
-                    gen_args.append("-s")
-
-                gen(gen_args)
+                    gen(gen_args)
 
 
 if __name__ == "__main__":
