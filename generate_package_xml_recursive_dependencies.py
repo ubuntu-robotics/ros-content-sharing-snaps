@@ -68,7 +68,6 @@ def main():
     target_pkg = args.variant.replace("-", "_")
 
     try:
-        # ['build', 'buildtool', 'build_export', 'buildtool_export', 'exec', 'run', 'test'],
         target_pkg_rec_deps = dependency_walker.get_recursive_depends(
             target_pkg,
             [
