@@ -42,8 +42,6 @@ jobs:
     name: Remote build ROS snaps
     needs: generate-snapcrafts
     runs-on: [ubuntu-latest]
-    outputs:
-      snap-file: ${{ steps.build-snap.outputs.snap }}
     strategy:
       fail-fast: false
       matrix:
@@ -95,7 +93,7 @@ jobs:
         name: Upload the snap as artifact
         with:
           name: ${{ matrix.snap_names }}
-          path: ${{ steps.build-snap.outputs.snap }}
+          path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}/*.snap
 
   ros-publish:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
