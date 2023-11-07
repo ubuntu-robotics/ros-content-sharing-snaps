@@ -39,7 +39,7 @@ jobs:
           path: snaps/
 
   snap-build:
-    name: Remote building the ros snaps
+    name: Remote build ROS snaps
     needs: generate-snapcrafts
     runs-on: [ubuntu-latest]
     outputs:
