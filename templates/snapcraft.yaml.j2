@@ -88,12 +88,12 @@ parts:
 {% else %}
       craftctl default
 
-      if [ -f "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/blas/libblas.so.3."* ]; then
-        ln --symbolic --force --relative "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/blas/libblas.so.3."* "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libblas.so.3"
+      if [ -f "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET}/blas/libblas.so.3."* ]; then
+        ln --symbolic --force --relative "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET}/blas/libblas.so.3."* "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libblas.so.3"
       fi
 
-      if [ -f "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/lapack/liblapack.so.3."* ]; then
-        ln --symbolic --force --relative "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/lapack/liblapack.so.3."* "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/liblapack.so.3"
+      if [ -f "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET}/lapack/liblapack.so.3."* ]; then
+        ln --symbolic --force --relative "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET}/lapack/liblapack.so.3."* "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET}/liblapack.so.3"
       fi
 {% endif %}
   cleanup:
