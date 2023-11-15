@@ -112,5 +112,5 @@ jobs:
       env:
         SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
       with:
-        snap: ${{needs.build.outputs.snap-file}}
+        snap:  /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}/*.snap
         release: ${{ startsWith(github.ref, 'refs/tags/') && 'edge'}}
