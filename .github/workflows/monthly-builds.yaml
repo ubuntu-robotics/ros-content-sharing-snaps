@@ -114,5 +114,5 @@ jobs:
       env:
         SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
       with:
-        snap: ${{ env.TAG }}
-        release: ${{ startsWith(github.ref, 'refs/tags/') && 'edge'}}
+        snap: ${{ env.SNAPFILE }}
+        release: edge
