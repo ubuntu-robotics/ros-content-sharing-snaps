@@ -56,9 +56,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: snaps
-      - name: print matrix
-        run: |
-          echo ${{ matrix.snap_names }}
       - name: Add LP credentials
         run: |
           mkdir -p ~/.local/share/snapcraft/provider/launchpad/
