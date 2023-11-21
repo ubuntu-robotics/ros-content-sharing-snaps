@@ -7,8 +7,6 @@ from pathlib import Path
 
 import jinja2
 
-# import importlib.resources as pkg_resources
-
 
 def main(args=None):
     parser = argparse.ArgumentParser(
