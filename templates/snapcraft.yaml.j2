@@ -1,0 +1,117 @@
+{%- set coremap={'noetic':'core20', 'foxy':'core20', 'humble':'core22'} -%}
+{%- set distromap={'noetic':'focal', 'foxy':'focal', 'humble':'jammy'} -%}
+{%- set pluginmap={'noetic':'catkin', 'foxy':'colcon', 'humble':'colcon'} -%}
+{%- set versionmap={'noetic':'1', 'foxy':'2', 'humble':'2'} -%}
+{%- set ros = 'ros' if versionmap[ros_distro] == '1' else 'ros2' -%}
+{%- set devsuffix = '-dev' if dev is defined and dev | bool else '' -%}
+{%- set snapname = "ros-" + ros_distro + "-" + variant + devsuffix -%}
+
+name: {{ snapname }}
+version: '0.1'
+summary: The ROS {{ versionmap[ros_distro] }} {{ ros_distro }} {{ variant }} variant.
+description: |
+  This snap contains the ROS {{ ros_distro }} {{ variant }} variant [1].
+  It is meant to be consumed as a stage or build snap.
+
+  [1] https://ros.org/reps/rep-0150.html
+
+grade: stable
+confinement: strict
+base: {{ coremap[ros_distro] }}
+
+# Add ROS repository
+package-repositories:
+  - components: [main]
+    formats: [deb]
+    key-id: C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+    key-server: keyserver.ubuntu.com
+    suites: [{{ distromap[ros_distro] }}]
+    type: apt
+{%- if versionmap[ros_distro] == '1' %}
+    url: http://packages.ros.org/ros/ubuntu
+{%- else %}
+    url: http://repo.ros2.org/ubuntu/main
+{%- endif %}
+
+architectures: [amd64, arm64, armhf]
+
+slots:
+  ros-{{ ros_distro }}:
+    content: ros-{{ ros_distro }}
+    interface: content
+    read: [/]
+
+parts:
+{%- if dev is defined and dev | bool %}
+  variant:
+    plugin: {{ pluginmap[ros_distro] }}
+    source: ./generate_package_xml_recursive_dependencies.py
+    source-branch: fix/ros2
+{%- if versionmap[ros_distro] == '1' %}
+    build-packages: [ros-{{ ros_distro }}-catkin]
+{%- else %}
+    build-packages:
+      - ros-{{ ros_distro }}-ros-environment
+      - ros-{{ ros_distro }}-ros-workspace
+      - ros-{{ ros_distro }}-ament-index-cpp
+      - ros-{{ ros_distro }}-ament-index-python
+{%- endif %}
+    build-environment:
+      - ROS_DISTRO: {{ ros_distro }}
+      - ROS_VERSION: '{{ versionmap[ros_distro] }}'
+    override-build: |
+      python3 $SNAPCRAFT_PART_SRC/generate_package_xml_recursive_dependencies.py --variant {{ variant }} --rosdistro $ROS_DISTRO --output-file $SNAPCRAFT_PART_SRC/package.xml --cmake-file $SNAPCRAFT_PART_SRC/CMakeLists.txt
+      snapcraftctl build
+{%- if versionmap[ros_distro] == '1' %}
+      find "${SNAPCRAFT_PART_INSTALL}/opt/ros/${ROS_DISTRO}/share/" \( -name "*Config.cmake" -o -name "*extras.cmake" \) -exec \
+        sed -i -e "s|/opt|/snap/{{ snapname }}/current&|g" -e "s|/usr|/snap/{{ snapname }}/current&|g" \
+        -e "s|\${% raw %}{{.*_DIR}}{% endraw %}/../../..|/snap/{{ snapname }}/current/opt/ros/${ROS_DISTRO}|g" {} \;
+{%- endif %}
+{% else %}
+  variant:
+    plugin: nil
+    stage-packages: [ros-{{ ros_distro }}-{{ variant | replace("_", "-") }}]
+    # deb's update-alternatives are not run in snapcraft,
+    # thus these libraries symlinks aren't create in lib/arch/.
+    # We do so manually here for those two libraries that are very common in ROS.
+    override-build: |
+{% if coremap[ros_distro] == 'core20' %}
+      snapcraftctl build
+
+      if [ -f "${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/blas/libblas.so.3."* ]; then
+        ln --symbolic --force --relative "${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/blas/libblas.so.3."* "${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libblas.so.3"
+      fi
+
+      if [ -f "${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/lapack/liblapack.so.3."* ]; then
+        ln --symbolic --force --relative "${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/lapack/liblapack.so.3."* "${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/liblapack.so.3"
+      fi
+{% else %}
+      craftctl default
+
+      if [ -f "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/blas/libblas.so.3."* ]; then
+        ln --symbolic --force --relative "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/blas/libblas.so.3."* "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libblas.so.3"
+      fi
+
+      if [ -f "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/lapack/liblapack.so.3."* ]; then
+        ln --symbolic --force --relative "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/lapack/liblapack.so.3."* "${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/liblapack.so.3"
+      fi
+{% endif %}
+  cleanup:
+    after: [variant]
+{%- if ros_distro == 'humble' and variant == 'desktop' %}
+    build-packages: [fd-find, openjdk-17-jre-headless, ca-certificates-java, ca-certificates]
+{%- else %}
+    build-packages: [fd-find]
+{%- endif %}
+    plugin: nil
+    source: https://github.com/ubuntu-robotics/snapcraft-ros-clean.git
+    build-environment:
+      - ROS_DISTRO: {{ ros_distro }}
+    override-prime: |
+      $SNAPCRAFT_PART_SRC/scripts/clean_ROS_debs.sh
+      $SNAPCRAFT_PART_SRC/scripts/clean_files.sh
+{% if ros_distro == 'humble' and variant == 'desktop' %}
+      # https://forum.snapcraft.io/t/resolve-package-contains-external-symlinks-error-when-trying-to-snap/2963/20
+      rm -vf usr/lib/jvm/java-11-openjdk-*/lib/security/blacklisted.certs
+{% endif %}
+{% endif %}
