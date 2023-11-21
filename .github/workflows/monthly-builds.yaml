@@ -47,7 +47,6 @@ jobs:
       matrix:
         snap_names: ${{ fromJSON(needs.generate-snapcrafts.outputs.matrix) }}
     env:
-      SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT7_CREDS }}
       # snapcraft remote-build will create a repository with the name decided by the --build-id arg
       # URL to this repo echoed below to help debug builds (does not change if the workflow is re-run)
       SNAPCRAFT_BUILDER_ID: ${{ github.run_id }}
