@@ -111,4 +111,4 @@ jobs:
         SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
       with:
         snap: ${{ env.SNAPFILE }}
-        release: edge
+        release: beta
