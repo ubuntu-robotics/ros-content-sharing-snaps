@@ -37,4 +37,4 @@ jobs:
           sudo snap install snapcraft --classic
       - name: Promote ROS snaps to stable
         run: |
-          snapcraft promote ros-${{ matrix.snap_names }} --from-channel latest/edge --to-channel latest/stable
+          snapcraft promote ros-${{ matrix.snap_names }} --from-channel latest/beta --to-channel latest/stable
