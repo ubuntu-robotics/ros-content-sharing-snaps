@@ -63,7 +63,7 @@ def main(args=None):
                 ros_distro = distro_content_sharing_snap.ros_distro
                 folders = [
                     parsed_args.path / f'{ros_distro}-{variant}-{architecture}',
-                    parsed_args.path / f'{ros_distro}-{variant}-{architecture}-dev'
+                    parsed_args.path / f'{ros_distro}-{variant}-dev-{architecture}'
                 ]
 
                 for folder in folders:
