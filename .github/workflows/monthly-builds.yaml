@@ -35,7 +35,7 @@ jobs:
       - name: Upload snapcrafts folders
         uses: actions/upload-artifact@v3
         with:
-          name: snaps
+          name: snapcraft_yamls
           path: snaps/
 
   snap-build:
@@ -54,7 +54,7 @@ jobs:
       - name: Download snapcrafts folders
         uses: actions/download-artifact@v3
         with:
-          name: snaps
+          name: snapcraft_yamls
       - name: Add LP credentials
         run: |
           mkdir -p ~/.local/share/snapcraft/provider/launchpad/
@@ -64,6 +64,9 @@ jobs:
       - name: Print Launchpad build repository
         run: |
           echo "Building at: https://git.launchpad.net/~ce-certification-qa/+snap/$SNAPCRAFT_BUILDER_ID"
+      - name: Print snapcraft.yaml
+        run: |
+          cat /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}/snapcraft.yaml
       - uses: snapcore/action-build@v1
         with:
           path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}
