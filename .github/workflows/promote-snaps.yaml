@@ -38,3 +38,11 @@ jobs:
       - name: Promote ROS snaps to stable
         run: |
           snapcraft promote ros-${{ matrix.snap_names }} --from-channel latest/beta --to-channel latest/stable
+      - uses: actions/upload-artifact@v3
+        name: Upload snapcraft logs
+        if: always()
+        with:
+          name: snapcraft_logs
+          path: |
+            /home/runner/.local/state/snapcraft/log/
+
