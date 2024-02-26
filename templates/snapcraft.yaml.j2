@@ -38,11 +38,13 @@ package-repositories:
 architectures:
   - build-on: {{ architecture }}
 
+{% if dev is not defined or not dev | bool -%}
 slots:
   ros-{{ ros_distro }}:
     content: ros-{{ ros_distro }}
     interface: content
     read: [/]
+{% endif %}
 
 parts:
 {%- if dev is defined and dev | bool %}
