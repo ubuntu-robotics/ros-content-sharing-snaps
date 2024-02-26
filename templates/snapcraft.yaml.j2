@@ -12,9 +12,11 @@ summary: The ROS {{ versionmap[ros_distro] }} {{ ros_distro }} {{ variant }} var
 description: |
   This snap contains the ROS {{ ros_distro }} {{ variant }} variant [1].
   It is meant to be consumed as a stage or build snap.
-
+{% if versionmap[ros_distro] == '1' %}
   [1] https://ros.org/reps/rep-0150.html
-
+{% else %}
+  [1] https://ros.org/reps/rep-2001.html
+{% endif %}
 grade: stable
 confinement: strict
 base: {{ coremap[ros_distro] }}
