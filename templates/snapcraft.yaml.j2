@@ -2,6 +2,12 @@
 {%- set distromap={'noetic':'focal', 'foxy':'focal', 'humble':'jammy'} -%}
 {%- set pluginmap={'noetic':'catkin', 'foxy':'colcon', 'humble':'colcon'} -%}
 {%- set versionmap={'noetic':'1', 'foxy':'2', 'humble':'2'} -%}
+{%- set slotmap={
+  'noetic':["ros-core", "ros-base", "robot", "desktop"],
+  'foxy':["ros-core", "ros-base", "desktop"],
+  'humble':["ros-core", "ros-base", "desktop"],
+  }
+-%}
 {%- set ros = 'ros' if versionmap[ros_distro] == '1' else 'ros2' -%}
 {%- set devsuffix = '-dev' if dev is defined and dev | bool else '' -%}
 {%- set snapname = "ros-" + ros_distro + "-" + variant + devsuffix -%}
@@ -40,11 +46,13 @@ architectures:
 
 {% if dev is not defined or not dev | bool -%}
 slots:
-  ros-{{ ros_distro }}:
-    content: ros-{{ ros_distro }}
+{%- for slot in slotmap[ros_distro][:slotmap[ros_distro].index(variant)+1] %}
+  {{ "ros-" + ros_distro + "-" + slot}}:
+    content: {{ "ros-" + ros_distro + "-" + slot}}
     interface: content
     read: [/]
-{% endif %}
+{%- endfor -%}
+{%- endif %}
 
 parts:
 {%- if dev is defined and dev | bool %}
