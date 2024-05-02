@@ -68,6 +68,8 @@ jobs:
         run: |
           cat /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}/snapcraft.yaml
       - uses: snapcore/action-build@v1
+        env:
+          SNAPCRAFT_REMOTE_BUILD_STRATEGY: force-fallback
         with:
           path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}
           snapcraft-args: "remote-build --launchpad-accept-public-upload --build-id ${{ matrix.snap_names }}-${SNAPCRAFT_BUILDER_ID}"
