@@ -59,8 +59,10 @@ jobs:
         run: |
           mkdir -p ~/.local/share/snapcraft/provider/launchpad/
           echo '${{ secrets.LP_CREDS }}' > ~/.local/share/snapcraft/provider/launchpad/credentials
+          echo '${{ secrets.LP_CREDS }}' > ~/.local/share/snapcraft/launchpad-credentials
           git config --global user.email "canonical-robotics-brand@canonical.com"
           git config --global user.name "Canonical robotics"
+          git config --global init.defaultBranch main
       - name: Print Launchpad build repository
         run: |
           echo "Building at: https://git.launchpad.net/~ce-certification-qa/+snap/$SNAPCRAFT_BUILDER_ID"
