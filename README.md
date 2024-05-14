@@ -2,7 +2,7 @@
 ROS content sharing snaps generator
 
 This repository contains various scripts to generate the content sharing snaps for ROS.
-The snapcraft extensions corresponding to these content-sharing can be found the snapcraft documentation for [ROS](https://snapcraft.io/docs/ros-noetic-content-extension) and [ROS 2](https://snapcraft.io/docs/ros2-humble-content-extension).
+The snapcraft extensions corresponding to these content-sharing can be found the snapcraft documentation for [ROS](https://snapcraft.io/docs/ros-noetic-content-extension) and [ROS 2](https://snapcraft.io/docs/ros2-jazzy-content-extension).
 
 Additionnaly, this repository contains the CI to build and upload the content sharing snaps.
 
@@ -15,7 +15,7 @@ Generate a `package.xml` with all the recursive `build`, `buildtool`, `build_exp
 ```
 optional arguments:
   -h, --help            show this help message and exit
-  --rosdistro {noetic,foxy,humble}
+  --rosdistro {noetic,foxy,humble,jazzy}
                         The ROS distro to evaluate.
   --variant {desktop,desktop-full,perception,robot,ros-base,ros-core}
                         The ROS (install) metapackage to serve as a variant. (default: None).
@@ -31,7 +31,7 @@ Generate a `snapcraft.yaml` file for a ROS foundational snap.
 ```
 optional arguments:
   -h, --help            show this help message and exit
-  -r {noetic,foxy,humble}, --rosdistro {noetic,foxy,humble}
+  -r {noetic,foxy,humble,jazzy}, --rosdistro {noetic,foxy,humble,jazzy}
                         The ROS distro to target.
   -v {desktop,desktop-full,perception,robot,ros-base,ros-core}, --variant {desktop,desktop-full,perception,robot,ros-base,ros-core}
                         The ROS metapackage to serve as a baseline. (default: ros-core).

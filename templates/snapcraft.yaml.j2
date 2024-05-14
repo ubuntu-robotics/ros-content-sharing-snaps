@@ -1,11 +1,12 @@
-{%- set coremap={'noetic':'core20', 'foxy':'core20', 'humble':'core22'} -%}
-{%- set distromap={'noetic':'focal', 'foxy':'focal', 'humble':'jammy'} -%}
-{%- set pluginmap={'noetic':'catkin', 'foxy':'colcon', 'humble':'colcon'} -%}
-{%- set versionmap={'noetic':'1', 'foxy':'2', 'humble':'2'} -%}
+{%- set coremap={'noetic':'core20', 'foxy':'core20', 'humble':'core22', 'jazzy':'core24'} -%}
+{%- set distromap={'noetic':'focal', 'foxy':'focal', 'humble':'jammy', 'jazzy':'noble'} -%}
+{%- set pluginmap={'noetic':'catkin', 'foxy':'colcon', 'humble':'colcon', 'jazzy':'colcon'} -%}
+{%- set versionmap={'noetic':'1', 'foxy':'2', 'humble':'2', 'jazzy': '2'} -%}
 {%- set slotmap={
   'noetic':["ros-core", "ros-base", "robot", "desktop"],
   'foxy':["ros-core", "ros-base", "desktop"],
   'humble':["ros-core", "ros-base", "desktop"],
+  'jazzy':["ros-core", "ros-base", "desktop"],
   }
 -%}
 {%- set ros = 'ros' if versionmap[ros_distro] == '1' else 'ros2' -%}
