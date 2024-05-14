@@ -68,8 +68,15 @@ package-repositories:
     url: http://packages.ros.org/ros2/ubuntu
 {%- endif %}
 
+{%- if coremap[ros_distro] == "core24" %}
+platforms:
+  {{ architecture }}:
+    build-on: [{{ architecture }}]
+    build-for: [{{ architecture }}]
+{%- else %}
 architectures:
   - build-on: {{ architecture }}
+{%- endif %}
 
 {% if dev is not defined or not dev | bool -%}
 slots:
