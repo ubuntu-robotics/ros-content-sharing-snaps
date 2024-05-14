@@ -63,6 +63,7 @@ jobs:
           git config --global user.email "canonical-robotics-brand@canonical.com"
           git config --global user.name "Canonical robotics"
           git config --global init.defaultBranch main
+          git init /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}
       - name: Print Launchpad build repository
         run: |
           echo "Building at: https://git.launchpad.net/~ce-certification-qa/+snap/$SNAPCRAFT_BUILDER_ID"
