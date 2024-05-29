@@ -105,7 +105,11 @@ parts:
       - ROS_VERSION: '{{ versionmap[ros_distro] }}'
     override-build: |
       python3 $SNAPCRAFT_PART_SRC/generate_package_xml_recursive_dependencies.py --variant {{ variant }} --rosdistro $ROS_DISTRO --output-file $SNAPCRAFT_PART_SRC/package.xml --cmake-file $SNAPCRAFT_PART_SRC/CMakeLists.txt
+{% if coremap[ros_distro] == 'core20' %}
       snapcraftctl build
+{% else %}
+      craftctl default
+{%- endif %}
 {%- if versionmap[ros_distro] == '1' %}
       find "${SNAPCRAFT_PART_INSTALL}/opt/ros/${ROS_DISTRO}/share/" \( -name "*Config.cmake" -o -name "*extras.cmake" \) -exec \
         sed -i -e "s|/opt|/snap/{{ snapname }}/current&|g" -e "s|/usr|/snap/{{ snapname }}/current&|g" \
@@ -148,8 +152,16 @@ parts:
     build-environment:
       - ROS_DISTRO: {{ ros_distro }}
     override-prime: |
+{% if coremap[ros_distro] == 'core20' %}
+      snapcraftctl prime
+{% else %}
       craftctl default
+{% endif %}
+{%- if versionmap[ros_distro] == '1' %}
       $SNAPCRAFT_PART_SRC/scripts/clean_ROS_debs.sh
+{% else %}
+      $SNAPCRAFT_PART_SRC/scripts/clean_ROS_2_debs.sh
+{% endif %}
       $SNAPCRAFT_PART_SRC/scripts/clean_files.sh
 {% endif %}
 {% if ros_distro == 'humble' and variant == 'desktop' %}
