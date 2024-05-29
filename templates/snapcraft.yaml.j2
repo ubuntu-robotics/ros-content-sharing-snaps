@@ -148,7 +148,11 @@ parts:
     build-environment:
       - ROS_DISTRO: {{ ros_distro }}
     override-prime: |
+{%- if versionmap[ros_distro] == '1' %}
       $SNAPCRAFT_PART_SRC/scripts/clean_ROS_debs.sh
+{% else %}
+      $SNAPCRAFT_PART_SRC/scripts/clean_ROS_2_debs.sh
+{% endif %}
       $SNAPCRAFT_PART_SRC/scripts/clean_files.sh
 {% endif %}
 {% if ros_distro == 'humble' and variant == 'desktop' %}
