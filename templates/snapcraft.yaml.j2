@@ -148,9 +148,7 @@ parts:
     build-environment:
       - ROS_DISTRO: {{ ros_distro }}
     override-prime: |
-      if [ -f "${SNAPCRAFT_PART_INSTALL}/run/environment.sh" ]; then
-        . "${SNAPCRAFT_PART_INSTALL}/run/environment.sh"
-      fi
+      craftctl default
       $SNAPCRAFT_PART_SRC/scripts/clean_ROS_debs.sh
       $SNAPCRAFT_PART_SRC/scripts/clean_files.sh
 {% endif %}
