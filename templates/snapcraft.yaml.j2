@@ -62,8 +62,6 @@ package-repositories:
     type: apt
 {%- if versionmap[ros_distro] == '1' %}
     url: http://packages.ros.org/ros/ubuntu
-{%- elif ros_distro == 'jazzy' %}
-    url: http://packages.ros.org/ros2-testing/ubuntu
 {%- else %}
     url: http://packages.ros.org/ros2/ubuntu
 {%- endif %}
