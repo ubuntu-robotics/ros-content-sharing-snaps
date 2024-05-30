@@ -18,33 +18,33 @@ summary: The ROS {{ versionmap[ros_distro] }} {{ ros_distro }} {{ variant }} var
 description: |
   This snap contains the ROS {{ versionmap[ros_distro] }} {{ ros_distro }} {{ variant }} variant [1].
 
-  It provides the ROS {{ versionmap[ros_distro] }} {{ ros_distro }} stack to other snaps to that use it.
+  It provides the ROS {{ versionmap[ros_distro] }} {{ ros_distro }} stack to other snaps to that use it. \
   It shares the ROS {{ versionmap[ros_distro] }} {{ ros_distro }} libraries, components and executables
   through the content interface.
   This helps reduce the size of snaps and helps developers to easily snap ROS {{ versionmap[ros_distro] }} {{ ros_distro }} applications.
 
   *For users*
 
-  This snap is automatically installed and removed when needed.
+  This snap is automatically installed and removed when needed. \
   Manually adding or removing this snap is not recommended and might break things.
 
   If you are having issues with snaps using ROS, please contact the experts on the Snapcraft forum [2].
 
   *For developers*
 
-  The `ros` extensions are the recommended way to use this in your own snap [3].
-  Find out how to do so in the documentation [4].
-  You can report issues with this content snap on GitHub [5] where the source code is available [6].
+  The `ros` extensions are the recommended way to use this in your own snap [3]. \
+  Find out how to do so in the documentation [4]. \
+  You can report issues with this content snap on GitHub [5] where the source code is available [6]. \
 
 {% if versionmap[ros_distro] == '1' %}
   [1] https://ros.org/reps/rep-0150.html
 {% else %}
   [1] https://ros.org/reps/rep-2001.html
 {% endif %}
-  [2] https://forum.snapcraft.io/
-  [3] https://snapcraft.io/docs/supported-extensions
-  [4] https://ubuntu.com/robotics/docs/ros-deployment-with-snaps-part-4
-  [5] https://github.com/ubuntu-robotics/ros-content-sharing-snaps/issues
+  [2] https://forum.snapcraft.io/ \
+  [3] https://snapcraft.io/docs/supported-extensions \
+  [4] https://ubuntu.com/robotics/docs/ros-deployment-with-snaps-part-4 \
+  [5] https://github.com/ubuntu-robotics/ros-content-sharing-snaps/issues \
   [6] https://github.com/ubuntu-robotics/ros-content-sharing-snaps
   
   ROS {{ ros_distro }} logo is a trademark of Open Source Robotics Foundation.
