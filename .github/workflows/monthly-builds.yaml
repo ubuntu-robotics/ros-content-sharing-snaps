@@ -78,7 +78,7 @@ jobs:
           snapcraft-args: "remote-build --launchpad-accept-public-upload --build-id ${{ matrix.snap_names }}-${SNAPCRAFT_BUILDER_ID}"
       - name: check number of built snaps
         run: |
-          count_txt_files=$(find /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }} -type f -name 'ros*.txt' | wc -l)
+          count_txt_files=$(find /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }} -type f -name "*${{ matrix.snap_names }}*.txt" | wc -l)
           count_snap_files=$(find ${{ matrix.snap_names }} -type f -name '*.snap' | wc -l)
           if [ "$count_txt_files" -ne "$count_snap_files" ]; then
             echo "Error: The number of '.txt' files and '.snap' files do not match."
@@ -87,7 +87,7 @@ jobs:
       - name: Print snapcraft log
         if: always()
         run: |
-          cat /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}/ros*.txt
+          cat /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}/*${{ matrix.snap_names }}*.txt
       - uses: actions/upload-artifact@v3
         name: Upload snapcraft logs
         if: always()
@@ -96,7 +96,7 @@ jobs:
           path: |
             /home/runner/.cache/snapcraft/log/
             /home/runner/.local/state/snapcraft/log/
-            /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/ros-*.txt
+            /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/**/*ros-*.txt
       - uses: actions/upload-artifact@v3
         name: Upload the snap as artifact
         with:
