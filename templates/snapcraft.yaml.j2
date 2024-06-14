@@ -1,11 +1,12 @@
-{%- set coremap={'noetic':'core20', 'foxy':'core20', 'humble':'core22'} -%}
-{%- set distromap={'noetic':'focal', 'foxy':'focal', 'humble':'jammy'} -%}
-{%- set pluginmap={'noetic':'catkin', 'foxy':'colcon', 'humble':'colcon'} -%}
-{%- set versionmap={'noetic':'1', 'foxy':'2', 'humble':'2'} -%}
+{%- set coremap={'noetic':'core20', 'foxy':'core20', 'humble':'core22', 'jazzy':'core24'} -%}
+{%- set distromap={'noetic':'focal', 'foxy':'focal', 'humble':'jammy', 'jazzy':'noble'} -%}
+{%- set pluginmap={'noetic':'catkin', 'foxy':'colcon', 'humble':'colcon', 'jazzy':'colcon'} -%}
+{%- set versionmap={'noetic':'1', 'foxy':'2', 'humble':'2', 'jazzy': '2'} -%}
 {%- set slotmap={
   'noetic':["ros-core", "ros-base", "robot", "desktop"],
   'foxy':["ros-core", "ros-base", "desktop"],
   'humble':["ros-core", "ros-base", "desktop"],
+  'jazzy':["ros-core", "ros-base", "desktop"],
   }
 -%}
 {%- set ros = 'ros' if versionmap[ros_distro] == '1' else 'ros2' -%}
@@ -64,11 +65,18 @@ package-repositories:
 {%- if versionmap[ros_distro] == '1' %}
     url: http://packages.ros.org/ros/ubuntu
 {%- else %}
-    url: http://repo.ros2.org/ubuntu/main
+    url: http://packages.ros.org/ros2/ubuntu
 {%- endif %}
 
+{%- if coremap[ros_distro] == "core24" %}
+platforms:
+  {{ architecture }}:
+    build-on: [{{ architecture }}]
+    build-for: [{{ architecture }}]
+{%- else %}
 architectures:
   - build-on: {{ architecture }}
+{%- endif %}
 
 {% if dev is not defined or not dev | bool -%}
 slots:
@@ -99,7 +107,11 @@ parts:
       - ROS_VERSION: '{{ versionmap[ros_distro] }}'
     override-build: |
       python3 $SNAPCRAFT_PART_SRC/generate_package_xml_recursive_dependencies.py --variant {{ variant }} --rosdistro $ROS_DISTRO --output-file $SNAPCRAFT_PART_SRC/package.xml --cmake-file $SNAPCRAFT_PART_SRC/CMakeLists.txt
+{% if coremap[ros_distro] == 'core20' %}
       snapcraftctl build
+{% else %}
+      craftctl default
+{%- endif %}
 {%- if versionmap[ros_distro] == '1' %}
       find "${SNAPCRAFT_PART_INSTALL}/opt/ros/${ROS_DISTRO}/share/" \( -name "*Config.cmake" -o -name "*extras.cmake" \) -exec \
         sed -i -e "s|/opt|/snap/{{ snapname }}/current&|g" -e "s|/usr|/snap/{{ snapname }}/current&|g" \
@@ -142,7 +154,11 @@ parts:
     build-environment:
       - ROS_DISTRO: {{ ros_distro }}
     override-prime: |
+{%- if versionmap[ros_distro] == '1' %}
       $SNAPCRAFT_PART_SRC/scripts/clean_ROS_debs.sh
+{% else %}
+      $SNAPCRAFT_PART_SRC/scripts/clean_ROS_2_debs.sh
+{% endif %}
       $SNAPCRAFT_PART_SRC/scripts/clean_files.sh
 {% endif %}
 {% if ros_distro == 'humble' and variant == 'desktop' %}
