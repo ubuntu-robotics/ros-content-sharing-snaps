@@ -19,7 +19,7 @@ def main():
         "--rosdistro",
         type=str,
         required=True,
-        choices=("noetic", "foxy", "humble"),
+        choices=("noetic", "foxy", "humble", "jazzy"),
         help="The ROS distro to evaluate.",
     )
     parser.add_argument(
@@ -97,7 +97,7 @@ def main():
     meta_package = PackageTemplate._create_package_template(
         package_name=f'meta-{args.variant}', licenses=["GPLv3"]
     )
-    if args.rosdistro in ["foxy", "humble"]:
+    if args.rosdistro != "noetic":
         meta_package.buildtool_depends = [Dependency("ament_cmake")]
         # @todo <export><build_type>ament_cmake</build_type></export>
     for d in target_pkg_rec_deps:
@@ -109,7 +109,7 @@ def main():
     with open(args.output_file, "w") as f:
         f.write(meta_package_xml)
 
-    if args.rosdistro in ["foxy", "humble"]:
+    if args.rosdistro != "noetic":
         with open(args.cmake_file, "w") as f:
             f.write(f"""
 cmake_minimum_required(VERSION 3.5)
