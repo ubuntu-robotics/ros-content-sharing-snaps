@@ -120,6 +120,9 @@ parts:
 {% else %}
   variant:
     plugin: nil
+{% if coremap[ros_distro] == 'core24' %}
+
+{%- endif %}
     stage-packages: [ros-{{ ros_distro }}-{{ variant | replace("_", "-") }}]
     # deb's update-alternatives are not run in snapcraft,
     # thus these libraries symlinks aren't create in lib/arch/.
@@ -169,4 +172,17 @@ parts:
     build-packages: [openjdk-17-jre-headless, ca-certificates-java, ca-certificates]
     override-prime: |
       rm -vf usr/lib/jvm/java-11-openjdk-*/lib/security/blacklisted.certs
+{% endif %}
+{% if ros_distro == 'jazzy' and variant == 'desktop' %}
+  humble-desktop-libamdhip-exec-stack:
+    # https://github.com/ROCm/clr/issues/22
+    after: [variant]
+    plugin: nil
+    build-packages: [execstack]
+    override-prime: |
+      # try remove execstack on libamdhip
+      amdlib="/usr/lib/x86_64-linux-gnu/libamdhip64.so.5"
+      if [ -f $amdlib ]; then
+        execstack -c $amdlib
+      fi
 {% endif %}
