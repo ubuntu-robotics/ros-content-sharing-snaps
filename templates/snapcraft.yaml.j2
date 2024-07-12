@@ -120,9 +120,6 @@ parts:
 {% else %}
   variant:
     plugin: nil
-{% if coremap[ros_distro] == 'core24' %}
-
-{%- endif %}
     stage-packages: [ros-{{ ros_distro }}-{{ variant | replace("_", "-") }}]
     # deb's update-alternatives are not run in snapcraft,
     # thus these libraries symlinks aren't create in lib/arch/.
