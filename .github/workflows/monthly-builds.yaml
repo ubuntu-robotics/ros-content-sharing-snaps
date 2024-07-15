@@ -70,12 +70,13 @@ jobs:
       - name: Print snapcraft.yaml
         run: |
           cat /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}/snapcraft.yaml
-      - uses: snapcore/action-build@v1
+      - name: snapcraft
         env:
           SNAPCRAFT_REMOTE_BUILD_STRATEGY: force-fallback
-        with:
-          path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}
-          snapcraft-args: "remote-build --launchpad-accept-public-upload --build-id ${{ matrix.snap_names }}-${{ env.SNAPCRAFT_BUILDER_ID }}"
+        run: |
+          sudo snap install snapcraft --classic
+          cd /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}
+          snapcraft remote-build --launchpad-accept-public-upload --build-id ${{ matrix.snap_names }}-${{ env.SNAPCRAFT_BUILDER_ID }}
         # char ':' is illegal in GH artifact naming.
         # replace it with '-'
       - name: rename log file
