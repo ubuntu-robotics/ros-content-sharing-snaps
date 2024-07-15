@@ -66,7 +66,7 @@ jobs:
           git init /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}
       - name: Print Launchpad build repository
         run: |
-          echo "Building at: https://git.launchpad.net/~ce-certification-qa/+snap/$SNAPCRAFT_BUILDER_ID"
+          echo "Building at: https://git.launchpad.net/~ce-certification-qa/+snap/${{ env.SNAPCRAFT_BUILDER_ID }}"
       - name: Print snapcraft.yaml
         run: |
           cat /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}/snapcraft.yaml
@@ -75,7 +75,7 @@ jobs:
           SNAPCRAFT_REMOTE_BUILD_STRATEGY: force-fallback
         with:
           path: /home/runner/work/ros-content-sharing-snaps/ros-content-sharing-snaps/${{ matrix.snap_names }}
-          snapcraft-args: "remote-build --launchpad-accept-public-upload --build-id ${{ matrix.snap_names }}-${SNAPCRAFT_BUILDER_ID}"
+          snapcraft-args: "remote-build --launchpad-accept-public-upload --build-id ${{ matrix.snap_names }}-${{ env.SNAPCRAFT_BUILDER_ID }}"
         # char ':' is illegal in GH artifact naming.
         # replace it with '-'
       - name: rename log file
