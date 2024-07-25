@@ -154,6 +154,11 @@ parts:
     build-environment:
       - ROS_DISTRO: {{ ros_distro }}
     override-prime: |
+{% if coremap[ros_distro] == 'core20' %}
+      snapcraftctl prime
+{% else %}
+      craftctl default
+{% endif %}
 {%- if versionmap[ros_distro] == '1' %}
       $SNAPCRAFT_PART_SRC/scripts/clean_ROS_debs.sh
 {% else %}
